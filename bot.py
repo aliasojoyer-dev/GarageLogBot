@@ -1,20 +1,33 @@
 # bot.py
+
+import os
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from config import BOT_TOKEN
-import database  # наш модуль для работы с базой данных
+
+import database  # модуль для работы с базой данных
+
+# --------------------------
+# Получаем токен из Railway
+# --------------------------
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+
+if not BOT_TOKEN:
+    raise ValueError("BOT_TOKEN не найден в переменных окружения")
 
 # --------------------------
 # Инициализация бота
 # --------------------------
-bot = Bot(token=BOT_TOKEN)  # создаем объект бота с токеном
-storage = MemoryStorage()   # временное хранилище состояния пользователей (FSM)
+bot = Bot(token=BOT_TOKEN)  # создаём объект бота
+storage = MemoryStorage()   # хранилище состояний (FSM)
 dp = Dispatcher(bot, storage=storage)
-import os
-TOKEN = os.environ.get("BOT_TOKEN")
+
+# --------------------------
+# Инициализация базы данных
+# --------------------------
+database.init_db()
 
 # Создаем таблицы, если их нет
 database.init_db()
