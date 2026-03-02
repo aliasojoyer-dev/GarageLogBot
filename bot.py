@@ -88,8 +88,9 @@ async def start(message: types.Message):
 # --------------------------
 # Обработка главных кнопок
 # --------------------------
-@dp.callback_query_handler(lambda c: True)
+@dp.callback_query_handler(lambda c: c.data in ["add_car", "my_cars", "add_service", "history"])
 async def process_callback(callback_query: types.CallbackQuery):
+    await callback_query.answer()
     data = callback_query.data
     user_id = callback_query.from_user.id
 
@@ -120,6 +121,7 @@ async def process_add_car(message: types.Message, state: FSMContext):
         year = int(year)
     except:
         await message.answer("Неверный формат. Попробуй снова: марка, модель, год")
+        
         return
 
     database.add_car(message.from_user.id, make, model, year)
@@ -208,6 +210,7 @@ async def show_car_history(user_id, car_id):
         text += f"- {s[0]}, пробег: {s[1]} км, дата: {s[2]}, затраты: {s[3]}\n"
     text += f"Общие затраты: {total_cost}"
     await bot.send_message(user_id, text, reply_markup=main_menu())
+    
 
 # --------------------------
 # Добавление сервиса через кнопку конкретной машины
